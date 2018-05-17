@@ -20,65 +20,48 @@ int main() {
     
     robot.sensor_auto_calibrate();
     
-    int sensors[5];
-    
     while(1) {
-        robot.calibrated_sensor(sensors);
-        int num = bt.read_all(buffer, buffer_len, &chars_read);
-            
-        robot.cls();
-        robot.locate(0, 0);
+        bt.read_all(buffer, buffer_len, &chars_read);
         for(int i = 0; i < chars_read; ++i) {
-            if(buffer[i] == '\xDA' && buffer[i+1] == '\xAD') {            
-                switch(buffer[i+2]) {
+            // if(buffer[i] == '\xDA' && buffer[i+1] == '\xAD') {            
+                switch(buffer[i]) {
                  // stop
                  case '\x00': robot.stop();
-                              robot.printf("stop");
                               break;
                  // fwd
-                 case '\x01': robot.forward(0.5);
-                              robot.printf("fwd");
+                 case '\x01': robot.forward(0.3);
                               break;
                  // backward
-                 case '\x02': robot.backward(0.5);
-                              robot.printf("backward");
+                 case '\x02': robot.backward(0.3);
                               break;
                  // left
-                 case '\x04': robot.printf("left");
-                              robot.left(0.1);
+                 case '\x04': robot.left(0.15);
                               break;
                  // left + fwd
-                 case '\x05': robot.printf("l + f");
-                              robot.left_motor(0.25);
-                              robot.right_motor(.3);
+                 case '\x05': robot.left_motor(0.2);
+                              robot.right_motor(0.3);
                               break;
                  // left + back
-                 case '\x06': robot.printf("l + b");
-                              robot.left_motor(-0.25);
-                              robot.right_motor(-.3);
+                 case '\x06': robot.left_motor(-0.2);
+                              robot.right_motor(-0.3);
                               break;
                  // right             
-                 case '\x08': robot.printf("right");
-                              robot.right(0.1);
+                 case '\x08': robot.right(0.15);
                               break;
                  // right + fwd
-                 case '\x09': robot.printf("r + f");
-                              robot.left_motor(.3);
-                              robot.right_motor(0.25);
+                 case '\x09': robot.left_motor(0.3);
+                              robot.right_motor(0.2);
                               break;
                  // right + back
-                 case '\x0a': robot.printf("r + b");
-                              robot.left_motor(-.3);
-                              robot.right_motor(-0.25);
+                 case '\x0a': robot.left_motor(-0.3);
+                              robot.right_motor(-0.2);
                               break;
                  // default
-                default: robot.printf("stop");
-                         robot.stop();
-                         break;
+                 default: robot.stop();
+                          break;
                 }
-                i += 2;
-            }
+            //    i += 2;
+            //}
         }
-        wait(1);
     }
 }
