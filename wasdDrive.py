@@ -16,19 +16,19 @@ class WASDcontroller:
             if not hasattr(event, 'key'): continue
             if event.type == KEYDOWN:
                 if event.key == K_w: self.data |= 0x01
-                if event.key == K_s: self.data |= 0x02
-                if event.key == K_a: self.data |= 0x04
-                if event.key == K_d: self.data |= 0x08
-            if event.type == KEYUP:
+                elif event.key == K_s: self.data |= 0x02
+                elif event.key == K_a: self.data |= 0x04
+                elif event.key == K_d: self.data |= 0x08
+            elif event.type == KEYUP:
                 if event.key == K_w: self.data &= 0xfe
-                if event.key == K_s: self.data &= 0xfd
-                if event.key == K_a: self.data &= 0xfb
-                if event.key == K_d: self.data &= 0xf7
-            print(self.data)
+                elif event.key == K_s: self.data &= 0xfd
+                elif event.key == K_a: self.data &= 0xfb
+                elif event.key == K_d: self.data &= 0xf7
             self.send_data(self.data)
 
     def send_data(self, data):
-        self.ser.write(bytearray([self.start1, self.start2, data]))
+        #self.ser.write(bytearray([self.start1, self.start2, data]))
+        self.ser.write(bytearray([self.data]))
 
 keyboard = WASDcontroller("COM8")
 while True:
