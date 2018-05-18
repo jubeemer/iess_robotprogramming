@@ -6,7 +6,7 @@ m3pi robot;
 btbee bt;
 Timer timer;
 
-const float UPPER_THRESHOLD = 0.7;
+const float UPPER_THRESHOLD = 0.85;
 const float MIDDLE_THRESHOLD = 0.4;
 
 float outer_turn_scale(double line) {
