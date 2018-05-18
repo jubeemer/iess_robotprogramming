@@ -6,9 +6,44 @@ m3pi robot;
 btbee bt;
 Timer timer;
 
-const float TURN_SCALE = 0.6; // .4
-const float SLOW_SCALE = 0.2; // .1
-const float MAX_SPEED = 0.25; // .15
+const float UPPER_THRESHOLD = 0.7;
+const float MIDDLE_THRESHOLD = 0.4;
+
+float outer_turn_scale(double line) {
+    if(line > UPPER_THRESHOLD) {
+        return 0.5;
+    }
+    else if(line > MIDDLE_THRESHOLD) {
+        return 0.45;
+    }
+    else {
+        return 0.4;
+    }
+}
+
+float inner_turn_scale(double line) {
+    if(line > UPPER_THRESHOLD) {
+        return 0.9;
+    }
+    else if(line > MIDDLE_THRESHOLD) {
+        return 0.8;
+    }
+    else {
+        return 0.7;
+    }
+}
+
+float max_speed(double line) {
+    if(line > UPPER_THRESHOLD) {
+        return 0.5;
+    }
+    else if(line > MIDDLE_THRESHOLD) {
+        return 0.55;
+    }
+    else {
+        return 0.6;
+    }
+}
 
 int main() {
     robot.cls();
@@ -23,15 +58,15 @@ int main() {
     
     while(1) {
         line_pos = robot.line_position();
-        // line is to left - must turn left
         if(line_pos < 0) {
-            robot.left_motor(MAX_SPEED + SLOW_SCALE * line_pos);
-            robot.right_motor(MAX_SPEED - TURN_SCALE * line_pos);
+            robot.left_motor(max_speed(line_pos) + inner_turn_scale(line_pos) * line_pos);
+            robot.right_motor(max_speed(line_pos) - outer_turn_scale(line_pos) * line_pos);
         }
-        // line is to right - must turn right
         else {
-            robot.left_motor(MAX_SPEED + TURN_SCALE * line_pos);
-            robot.right_motor(MAX_SPEED - SLOW_SCALE * line_pos);
-        }
+            robot.left_motor(max_speed(line_pos) + outer_turn_scale(line_pos) * line_pos);
+            robot.right_motor(max_speed(line_pos) - inner_turn_scale(line_pos) * line_pos);
+        }   
     }
+        
 }
+
