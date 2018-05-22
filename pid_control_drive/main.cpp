@@ -3,27 +3,32 @@
 #include "btbee.h"
 #include <cmath>
 
+// INITIALIZATION
 m3pi robot;
 btbee bt;
 Timer timer;
 
-double error1 = 0;
-double error_prior = 0;
-double integral = 0;
-double derivative = 0;
-double iteration_time = .0005;
-float output_speed;
-float correction;
-double KP = .65;
-double KI = 0.02;
-double KD = 0.0015;
+float t0, t1;
+float dt = .001;
 
-// speed = .4 
-// kp = .19
-// ki = 0 
-// kd = .0004
+float BASE_SPEED = 0.8;
+float OUTER_MOTOR_SPEED = BASE_SPEED;
+float INNER_MOTOR_SPEED;
+
+float line_error = 0;
+float error_prev = 0;
+
+float integral = 0;
+float derivative = 0;
+float correction = 0;
+
+// CLOSED-LOOP CONTROL PARAMETERS
+float KP = 1.2;
+float KI = 0;
+float KD = 0.015;
 
 int main() {
+    timer.start();
     robot.cls();
         
     float bat = robot.battery();
@@ -32,39 +37,46 @@ int main() {
     
     robot.sensor_auto_calibrate();
     
-    float line_pos;
-    float OUTER_MOTOR_SPEED, INNER_MOTOR_SPEED;
-    
     while(1) {
-        line_pos = robot.line_position();
-                
-        error1 = line_pos;
-        integral += (error1 * iteration_time);
-        derivative = (error1 - error_prior) / iteration_time;
+        // START TIME
+        t0 = timer.read_ms();
         
-        correction = abs(KP*error1 + KI*integral + KD*derivative);
-        output_speed = -correction + 0.8; 
-        error_prior = error1;
+        // CALCULATE ERROR TERMS
+        line_error = robot.line_position();
+        integral += (line_error * dt);
+        derivative = (line_error - error_prev) / dt;
         
-        OUTER_MOTOR_SPEED = output_speed + correction;
-        INNER_MOTOR_SPEED = output_speed - correction;
+        // ERROR ADJUSTMENT
+        correction = abs(KP*line_error + KI*integral + KD*derivative);
+        INNER_MOTOR_SPEED = OUTER_MOTOR_SPEED - correction;
         
-        if(OUTER_MOTOR_SPEED > 1) {
-            OUTER_MOTOR_SPEED = 1;
-        }
+        // CHECK FOR BAD COMMANDS
         if(INNER_MOTOR_SPEED > 1) {
             INNER_MOTOR_SPEED = 1;
         }
+        if(INNER_MOTOR_SPEED < -1) {
+            INNER_MOTOR_SPEED = -1;
+        }
         
-        if(line_pos < 0) {
+        // SET MOTORS
+        if(line_error < 0) {
             robot.left_motor(INNER_MOTOR_SPEED);
             robot.right_motor(OUTER_MOTOR_SPEED);
         }
         else {
             robot.left_motor(OUTER_MOTOR_SPEED);
             robot.right_motor(INNER_MOTOR_SPEED);
-        } 
-        wait_ms(.5);  
+        }
+        
+        // UPDATE ERROR
+        error_prev = line_error;
+        
+        // NECESSARY WAIT
+        wait_ms(1);
+        
+        // END TIME
+        t1 = timer.read_ms();
+        dt = (t1 - t0) / 1000.0;  
     }
             
         
