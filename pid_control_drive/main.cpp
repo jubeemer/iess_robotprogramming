@@ -156,7 +156,7 @@ int main() {
     robot.sensor_auto_calibrate();
     
     //controller constructor
-    PIDLineFollower controller(robot, 0.9, 1.0, 0, 0.025);
+    PIDLineFollower controller(robot, .95, 1.1, 0, 0.035);
     // Lap constructor
     Lap L;
     
