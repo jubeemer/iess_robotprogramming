@@ -8,11 +8,10 @@ m3pi robot;
 btbee bt;
 Timer timer;
 
-float t0, t1;
-float dt = .001;
+const float dt = .008;
 bool first_loop = 1;
 
-float BASE_SPEED = 0.9;
+const float BASE_SPEED = 0.9;
 float LEFT_SPEED, RIGHT_SPEED;
 
 float line_error = 0;
@@ -25,7 +24,7 @@ float correction = 0;
 // CLOSED-LOOP CONTROL PARAMETERS
 float KP = 1.0;
 float KI = 0;
-float KD = 0.01;
+float KD = 0.025;
 
 int main() {
     timer.start();
@@ -38,10 +37,7 @@ int main() {
     robot.sensor_auto_calibrate();
     
     while(1) {
-        if(first_loop) {
-            t0 = timer.read_ms();
-        }
-        else if(timer.read() < 0.008) {
+        if(timer.read() < dt) {
             continue;
         }
         
@@ -78,13 +74,6 @@ int main() {
         
         // NECESSARY WAIT
         wait_ms(1);
-        
-        // CALCULATE dt
-        if(first_loop) {
-            t1 = timer.read_ms();
-            dt = (t1 - t0) / 1000.0;
-            first_loop = 0;
-        }
         
         // RESET TIMER
         timer.reset();
