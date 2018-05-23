@@ -95,6 +95,13 @@ public:
     : robot(robot_in), KP(KP_in), KI(KI_in), KD(KD_in),
     line_error(0.0), error_prev(0.0), integral(0.0), derivative(0.0),
     correction(0.0), BASE_SPEED(speed_in), LEFT_SPEED(0.0), RIGHT_SPEED(0.0) {}
+
+    void drive(float dt) {
+        update_error();
+        calculate_correction(dt);
+        check_errors();
+        throttle();
+    }
     
     void update_error() {
         error_prev = line_error;
@@ -122,7 +129,7 @@ public:
         }
     }
     
-    void drive() {
+    void throttle() {
         robot.left_motor(LEFT_SPEED);
         robot.right_motor(RIGHT_SPEED);
     }
@@ -158,16 +165,14 @@ int main() {
     timer.start();
     
     while(1) {
-        
-        
-        // Exit
+        // QUIT IF NUM LAPS IS REACHED
         if(L.lap_counter == MAX_NUM_LAPS || !mypin){
             robot.stop();
             L.print_laps(robot);
             break;
         }
         
-        // Lap counter
+        // LAP COUNTER
         robot.calibrated_sensor(L.sensor_data);
         if (L.is_black_surface()) {
             if(!L.on_black){
@@ -181,11 +186,8 @@ int main() {
             continue;
         }
         
-        // Controller
-        controller.update_error();
-        controller.calculate_correction(dt);
-        controller.check_errors();
-        controller.drive();
+        // CONTROLLER
+        controller.drive(dt);
         
         timer.reset();
     }
