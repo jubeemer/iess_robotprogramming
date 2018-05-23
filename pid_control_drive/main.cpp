@@ -1,15 +1,12 @@
 #include "mbed.h"
 #include "m3pi_ng.h"
-#include "btbee.h"
 #include "PIDLineFollower.h"
 #include "RaceTracker.h"
 
 m3pi robot;
-btbee bt;
 Timer timer;
 DigitalIn mypin(p21, PullUp);
 
-//global variables
 const float dt = .008;
 const int BLACK_TOLERANCE = 100;
 const int WHITE_TOLERANCE = 400;
