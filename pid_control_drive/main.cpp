@@ -34,9 +34,11 @@ int main() {
         
         // Lap counter
         tracker.get_raw_sensors();
-        if(!tracker.is_on_line() && tracker.is_black_surface()) {
-            tracker.record_lap();
-            tracker.set_on_line(true);
+        if(tracker.is_black_surface()) {
+            if(!tracker.is_on_line()) {
+                tracker.record_lap();
+                tracker.set_on_line(true);
+            }
         }
         else {
             tracker.set_on_line(false);
