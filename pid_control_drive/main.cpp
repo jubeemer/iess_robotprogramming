@@ -3,55 +3,31 @@
 #include "btbee.h"
 #include <cmath>
 
-// INITIALIZATION
 m3pi robot;
 btbee bt;
 Timer timer;
 
 const float dt = .008;
-bool first_loop = 1;
 
-const float BASE_SPEED = 0.9;
-float LEFT_SPEED, RIGHT_SPEED;
+class PIDLineFollower {
+public:
+    PIDLineFollower(m3pi &robot_in, float speed_in, float KP_in, float KI_in, float KD_in)
+                : robot(robot_in), KP(KP_in), KI(KI_in), KD(KD_in),
+                line_error(0.0), error_prev(0.0), integral(0.0), derivative(0.0),
+                correction(0.0), BASE_SPEED(speed_in), LEFT_SPEED(0.0), RIGHT_SPEED(0.0) {}
 
-float line_error = 0;
-float error_prev = 0;
-
-float integral = 0;
-float derivative = 0;
-float correction = 0;
-
-// CLOSED-LOOP CONTROL PARAMETERS
-float KP = 1.0;
-float KI = 0;
-float KD = 0.025;
-
-int main() {
-    timer.start();
-    robot.cls();
-        
-    float bat = robot.battery();
-    robot.locate(0, 0);
-    robot.printf("%.3f", bat);
-    
-    robot.sensor_auto_calibrate();
-    
-    while(1) {
-        if(timer.read() < dt) {
-            continue;
-        }
-        
-        // CALCULATE ERROR TERMS
+    void update_error() {
+        error_prev = line_error;
         line_error = robot.line_position();
-        integral += (line_error * dt);
-        derivative = (line_error - error_prev) / dt;
-        
-        // ERROR ADJUSTMENT
-        correction = KP*line_error + KI*integral + KD*derivative;
+    }
+
+    void calculate_correction(float dt) {
+        correction = KP*line_error + KI*(integral + line_error*dt) + KD*((line_error - error_prev) / dt);
         LEFT_SPEED = BASE_SPEED + correction;
         RIGHT_SPEED = BASE_SPEED - correction;
-        
-        // CHECK BAD COMMANDS
+    }
+
+    void check_errors() {
         if(LEFT_SPEED > 1) {
             LEFT_SPEED = 1;
         }
@@ -64,18 +40,50 @@ int main() {
         else if(RIGHT_SPEED < -1) {
             RIGHT_SPEED = -1;
         }
+    }
 
-        // SET MOTORS
+    void drive() {
         robot.left_motor(LEFT_SPEED);
         robot.right_motor(RIGHT_SPEED);
-        
-        // UPDATE ERROR
-        error_prev = line_error;
-        
-        // NECESSARY WAIT
-        wait_ms(1);
-        
-        // RESET TIMER
-        timer.reset();
     }
+
+private:
+    m3pi robot;
+    float KP;
+    float KI;
+    float KD;
+    float line_error;
+    float error_prev;
+    float integral;
+    float derivative;
+    float correction;
+
+    float BASE_SPEED;
+    float LEFT_SPEED;
+    float RIGHT_SPEED;
+};
+
+int main() {
+    robot.cls();
+    float bat = robot.battery();
+    robot.locate(0, 0);
+    robot.printf("%.3f", bat);
+    
+    robot.sensor_auto_calibrate();
+
+    PIDLineFollower controller(robot, 0.9, 1.0, 0, 0.025);
+    timer.start();
+
+    while(1) {        
+        if(timer.read() < dt) {
+            continue;
+        }
+        
+        controller.update_error();
+        controller.calculate_correction(dt);
+        controller.check_errors();
+        controller.drive();
+        
+        timer.reset();
+    } 
 }
