@@ -16,29 +16,29 @@ int main() {
     robot.sensor_auto_calibrate();
     
     PIDLineFollower controller(robot, .95, 1.1, 0, 0.035);
-    RaceTracker tracker(robot, 5, BLACK_TOLERANCE, WHITE_TOLERANCE);
+    RaceTracker race(robot, 5, BLACK_TOLERANCE, WHITE_TOLERANCE);
     
     timer.start();
     
     while(1) {
         // Quit and print race summary if button is pressed or the race 
         // is completed.
-        if(tracker.is_finished() || !mypin){
+        if(race.is_finished() || !mypin){
             robot.stop();
-            tracker.print_summary();
+            race.print_summary();
             break;
         }
         
         // Lap counter
-        tracker.get_raw_sensors();
-        if(tracker.is_black_surface()) {
-            if(!tracker.get_line_flag()) {
-                tracker.record_lap();
-                tracker.set_line_flag(true);
+        race.get_raw_sensors();
+        if(race.is_black_surface()) {
+            if(!race.get_line_flag()) {
+                race.record_lap();
+                race.set_line_flag(true);
             }
         }
         else {
-            tracker.set_line_flag(false);
+            race.set_line_flag(false);
         }
         
         // Wait until dt has passed to run the control algorithm
@@ -50,5 +50,5 @@ int main() {
         timer.reset();
     }
     
-    tracker.print_exit();
+    race.print_exit();
 }
