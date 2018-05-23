@@ -36,10 +36,10 @@ public:
     void record_lap();
 
     // Set the flag indicating whether the robot is currently over the start/finish line
-    void set_on_line(bool flag);
+    void set_line_flag(bool flag);
 
-    // Returns on_line
-    bool is_on_line();
+    // Returns line_flag
+    bool get_line_flag();
 
     // Check whether the robot has traversed the required number of laps.
     bool is_finished();
@@ -48,7 +48,7 @@ private:
     m3pi robot;
     Timer lap_timer;
     int race_num_laps;
-    bool on_line;
+    bool line_flag;
     int sensor_data[5];
     vector<int> lap_times;
     int num_laps;

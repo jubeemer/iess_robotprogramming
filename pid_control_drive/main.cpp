@@ -32,13 +32,13 @@ int main() {
         // Lap counter
         tracker.get_raw_sensors();
         if(tracker.is_black_surface()) {
-            if(!tracker.is_on_line()) {
+            if(!tracker.get_line_flag()) {
                 tracker.record_lap();
-                tracker.set_on_line(true);
+                tracker.set_line_flag(true);
             }
         }
         else {
-            tracker.set_on_line(false);
+            tracker.set_line_flag(false);
         }
         
         // Wait until dt has passed to run the control algorithm

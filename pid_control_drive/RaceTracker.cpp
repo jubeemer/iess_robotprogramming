@@ -9,7 +9,7 @@
 //                      considered "white"
 RaceTracker::RaceTracker(m3pi &robot_in, int race_num_laps_in,
                 int black_tolerance_in, int white_tolerance_in) 
-                : robot(robot_in), race_num_laps(race_num_laps_in), on_line(true),
+                : robot(robot_in), race_num_laps(race_num_laps_in), line_flag(true),
                 num_laps(0), total_time(0), BLACK_TOLERANCE(black_tolerance_in),
                 WHITE_TOLERANCE(white_tolerance_in) {
                     lap_timer.start();
@@ -96,13 +96,13 @@ void RaceTracker::record_lap() {
 }
 
 // Set the flag indicating whether the robot is currently over the start/finish line
-void RaceTracker::set_on_line(bool flag) {
-    on_line = flag;
+void RaceTracker::set_line_flag(bool flag) {
+    line_flag = flag;
 }
 
-// Returns on_line
-bool RaceTracker::is_on_line() {
-    return on_line;
+// Returns line_flag
+bool RaceTracker::get_line_flag() {
+    return line_flag;
 }
 
 // Check whether the robot has traversed the required number of laps.
