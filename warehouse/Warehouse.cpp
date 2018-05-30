@@ -6,7 +6,7 @@
 //  Copyright © 2018 Sabina Kim. All rights reserved.
 //
 
-#include "warehouse.h"
+#include "Warehouse.h"
 
 // constructor
 Warehouse::Warehouse(m3pi &robot_in, btbee &bt_in): 
@@ -184,4 +184,3 @@ void Warehouse::set_to(){
     }
     buffer[0] = '0';
 }
-//
