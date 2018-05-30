@@ -2,29 +2,28 @@
 #include "m3pi_ng.h"
 #include "PIDLineFollower.h"
 #include "RaceTracker.h"
-#include "Music.h"
+//#include "Music.h"
 #include "Warehouse.h"
 
 m3pi robot;
 Timer timer;
+Timer lap_timer;
 btbee bt;
 DigitalIn mypin(p21, PullUp);
 
 const float dt = .008;
 const int BLACK_TOLERANCE = 100;
 const int WHITE_TOLERANCE = 400;
+const bool IS_RACE_MODE = true;
 
 int main() {
 	robot.cls();
 	robot.sensor_auto_calibrate();
-	Music m;
+	//Music m;
 
 	Warehouse w(robot, bt);
-	PIDLineFollower controller(robot, .4, 0.9, 0, 0);
+	PIDLineFollower controller(robot, .3, 0.65, 0, 0.003);
 	RaceTracker race(robot, 2, BLACK_TOLERANCE, WHITE_TOLERANCE);
-
-	timer.start();
-	race.start_timer();
 
 	// Read in starting location from bluetooth
 	while (!w.is_started()) {
@@ -36,6 +35,9 @@ int main() {
 		w.set_to();
 	}
 
+	timer.start();
+	lap_timer.start();
+	
 	while (1) {
 		// Get path from bluetooth
 		w.get_station_path();
@@ -47,14 +49,14 @@ int main() {
 		}
 
 		// Press button to kill robot
-		if (!mypin) {
+		if ((w.is_end() && IS_RACE_MODE) || !mypin) {
+			lap_timer.stop();
 			robot.stop();
-			race.print_summary();
-			m.play_fight_song_2(robot);
+			race.print_summary(lap_timer.read_ms() - 1000);
+			//m.play_fight_song_2(robot);
 			break;
 		}
-
-		if (w.is_end()) {
+		else if (w.is_end()) {
 			robot.stop();
 			continue;
 		}
