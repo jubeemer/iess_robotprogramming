@@ -7,13 +7,6 @@
 
 using namespace std;
 
-const char S_ONE = '1';
-const char S_TWO = '2';
-const char S_THREE = '3';
-const char S_FOUR = '4';
-const char S_FIVE = '5';
-const char S_SIX = '6';
-
 class Warehouse {
 public:
     // Constructor
