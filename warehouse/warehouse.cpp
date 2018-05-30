@@ -113,6 +113,7 @@ void Warehouse::turn_180(){
     robot.left(1);
     wait_ms(120);
     robot.stop();
+    wait(1);
 }
 
 bool Warehouse::is_end(){
