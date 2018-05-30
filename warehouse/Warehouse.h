@@ -14,47 +14,50 @@ const char S_FOUR = '4';
 const char S_FIVE = '5';
 const char S_SIX = '6';
 
-struct Warehouse{
-    
-    // constructor
+class Warehouse {
+public:
+    // Constructor
     Warehouse(m3pi &robot_in, btbee &bt_in);
     
-    // initialize path_matrix
+    // Initialize path matrix
     void init_path_matrix();
     
-    // reverse path : helper function for path_matrix;
+    // Helper function - reverses a path
     string reverse_path(const string &original);
     
-    // add path to the q_path
+    // Add path from -> to to the queue
     void add_path(int to);
     
-    // get station path via bluetooth
+    // Read from Serial, add necessary paths to the queue
     void get_station_path();
     
+    // Handle an intersection
     void run();
     
+    // Perform a right turn for TURN_WAIT ms
     void turn_right();
     
+    // Perform a left turn for TURN_WAIT ms
     void turn_left();
     
+    // Drive forward for FORWARD_WAIT ms
     void go_forward();
     
+    // Turn 180 degrees.
     void turn_180();
     
-    // check if it's end of the game
+    // Check if queue is empty.
     bool is_end();
-    
     
 private:
     m3pi robot;
     btbee bt;
     int from;
-    bool make_turn;
     string path_matrix[6][6];
-    const int BLACK_TOLERANCE;
     const float TURN_WAIT;
     const float TURN_SPEED;
     const float FORWARD_WAIT;
+    const float FORWARD_SPEED;
     deque<char> q_path;
     
     //for bluetooth

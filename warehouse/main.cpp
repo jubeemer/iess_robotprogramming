@@ -15,48 +15,48 @@ const int BLACK_TOLERANCE = 100;
 const int WHITE_TOLERANCE = 400;
 
 int main() {
-    robot.cls();
-    robot.sensor_auto_calibrate();
-    // Music m;
-    
-    Warehouse w(robot, bt);
-    PIDLineFollower controller(robot, 0.3, 0.65, 0, 0.003);
-    RaceTracker race(robot, 2, BLACK_TOLERANCE, WHITE_TOLERANCE);
-    
-    timer.start();
-    race.start_timer();
-    
-    while(1) {
-        // Get path from bluetooth
-        w.get_station_path();
-        
-        // Warehouse
-        race.get_raw_sensors();
-        if(race.is_corner() && !w.is_end()){
-            w.run();
-        }
-        
-        // Press button to kill robot
-        if(!mypin){
-            robot.stop();
-            race.print_summary();
-            // m.play_fight_song_2(robot);
-            break;
-        }
-        
-        if(w.is_end()){
-            robot.stop();
-            continue;
-        }
-        
-        // Wait until dt has passed to run the control algorithm
-        if(timer.read() < dt) {
-            continue;
-        }
+	robot.cls();
+	robot.sensor_auto_calibrate();
+	// Music m;
 
-        controller.drive(dt);
-        
-        timer.reset();
-        
-    }
+	Warehouse w(robot, bt);
+	PIDLineFollower controller(robot, .3, 0.65, 0, 0.003);
+	RaceTracker race(robot, 2, BLACK_TOLERANCE, WHITE_TOLERANCE);
+
+	timer.start();
+	
+	while (1) {
+		// Get any waypoints from bluetooth serial
+		w.get_station_path();
+
+		// Process intersections in warehouse
+		race.get_raw_sensors();
+		if (race.is_corner() && !w.is_end()) {
+			w.run();
+		}
+
+		// Press button to kill robot
+		if (!mypin) {
+			robot.stop();
+			// m.play_fight_song_2(robot);
+			break;
+		}
+		
+        // Don't move is queue is empty
+        if (w.is_end()) {
+			robot.stop();
+			continue;
+		}
+
+		// Wait until dt has passed to run the control algorithm
+		if (timer.read() < dt) {
+			continue;
+		}
+
+        // Line following algorithm
+		controller.drive(dt);
+
+		timer.reset();
+
+	}
 }
