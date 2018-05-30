@@ -65,3 +65,4 @@ private:
 
 	const int BLACK_TOLERANCE, WHITE_TOLERANCE;
 };
+

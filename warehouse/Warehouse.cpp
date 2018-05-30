@@ -10,8 +10,8 @@
 
 // constructor
 Warehouse::Warehouse(m3pi &robot_in, btbee &bt_in) 
-                    : robot(robot_in), bt(bt_in), from(2), TURN_WAIT(80), 
-                    TURN_SPEED(1), FORWARD_WAIT(200), FORWARD_SPEED(0.3),
+                    : robot(robot_in), bt(bt_in), from(2), TURN_WAIT(87), 
+                    TURN_SPEED(1), FORWARD_WAIT(40), FORWARD_SPEED(0.6),
                     buffer_len(100), chars_read(0) {
                         init_path_matrix();
 }
@@ -29,7 +29,7 @@ void Warehouse::init_path_matrix() {
     path_matrix[1][5] = "LRFLR";
     
     path_matrix[2][3] = "LL";
-    path_matrix[2][4] = "FLRLRRL";
+    path_matrix[2][4] = "LRFRL";
     path_matrix[2][5] = "FFFLR";
     
     path_matrix[3][4] = "FFRL";
@@ -91,14 +91,14 @@ void Warehouse::add_path(int to) {
 }
 
 void Warehouse::turn_right() {
-    robot.right_motor(0);
+    robot.right_motor(-0.5);
     robot.left_motor(TURN_SPEED);
     wait_ms(TURN_WAIT);
 }
 
 void Warehouse::turn_left() {
     robot.right_motor(TURN_SPEED);
-    robot.left_motor(0);
+    robot.left_motor(-0.5);
     wait_ms(TURN_WAIT);
 }
 
@@ -109,7 +109,7 @@ void Warehouse::go_forward() {
 
 void Warehouse::turn_180() {
     robot.left(1);
-    wait_ms(120);
+    wait_ms(140);
     robot.stop();
     wait(1);
 }

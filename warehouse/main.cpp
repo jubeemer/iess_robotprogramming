@@ -15,12 +15,13 @@ const int BLACK_TOLERANCE = 100;
 const int WHITE_TOLERANCE = 400;
 
 int main() {
+	int count = 0;
 	robot.cls();
 	robot.sensor_auto_calibrate();
 	// Music m;
 
 	Warehouse w(robot, bt);
-	PIDLineFollower controller(robot, .3, 0.65, 0, 0.003);
+	PIDLineFollower controller(robot, .6, 0.70, 0, 0.012);
 	RaceTracker race(robot, 2, BLACK_TOLERANCE, WHITE_TOLERANCE);
 
 	timer.start();
@@ -32,6 +33,10 @@ int main() {
 		// Process intersections in warehouse
 		race.get_raw_sensors();
 		if (race.is_corner() && !w.is_end()) {
+			++count;
+			robot.cls();
+			robot.locate(0, 0);
+			robot.printf("%d", count);
 			w.run();
 		}
 
@@ -43,7 +48,7 @@ int main() {
 		}
 		
         // Don't move is queue is empty
-        if (w.is_end()) {
+       if (w.is_end()) {
 			robot.stop();
 			continue;
 		}
