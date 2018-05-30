@@ -21,7 +21,7 @@ int main() {
     // Music m;
 
     Warehouse w(robot, bt);
-    PIDLineFollower controller(robot, .6, 0.70, 0, 0.012);
+    PIDLineFollower controller(robot, 0.65, 0.73, 0.0, 0.015);
     RaceTracker race(robot, 2, BLACK_TOLERANCE, WHITE_TOLERANCE);
 
     timer.start();
