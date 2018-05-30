@@ -10,8 +10,8 @@
 
 // constructor
 Warehouse::Warehouse(m3pi &robot_in, btbee &bt_in): 
-robot(robot_in), bt(bt_in), 
-BLACK_TOLERANCE(900), TURN_WAIT(80), TURN_SPEED(1), FORWARD_WAIT(300),
+robot(robot_in), bt(bt_in), from(2),
+BLACK_TOLERANCE(900), TURN_WAIT(80), TURN_SPEED(1), FORWARD_WAIT(200),
 buffer_len(100), chars_read(0), started(false), to_received(false) {
     init_path_matrix();
     }
@@ -82,6 +82,9 @@ string Warehouse::reverse_path(const string &original){
 }
 
 void Warehouse::add_path(int to){
+    if(from == to) {
+        return;
+    }
     string str = path_matrix[from][to];
     for(int i = 0; i < str.size(); i++){
         q_path.push_back(str[i]);
@@ -106,7 +109,7 @@ void Warehouse::turn_left(){
 
 void Warehouse::go_forward(){
     robot.forward(.3);
-    wait_ms(250);
+    wait_ms(FORWARD_WAIT);
 }
 
 void Warehouse::turn_180(){
@@ -122,6 +125,9 @@ bool Warehouse::is_end(){
 
 void Warehouse::get_station_path(){
     bt.read_all(buffer, buffer_len, &chars_read);
+    if(chars_read == 0) {
+        return;
+    }
     switch(buffer[0]){
         case '\x01': add_path(0);
         break;
@@ -137,50 +143,6 @@ void Warehouse::get_station_path(){
         break;
     }
     buffer[0] = '0';
-}
-
-bool Warehouse::is_started(){
-    return started;
-}
-
-void Warehouse::set_from(){
-    bt.read_all(buffer, buffer_len, &chars_read);
-    switch(buffer[0]){
-        case '\x01': from = 0;  started=true; 
-        break;
-        case '\x02': from = 1; started=true; 
-        break;
-        case '\x03': from = 2; started=true; 
-        break;
-        case '\x04': from = 3; started=true; 
-        break;
-        case '\x05': from = 4;  started=true; 
-        break;
-        case '\x06': from = 5; started=true; 
-        break;
-    }
-    buffer[0] = '0';
-}
-
-bool Warehouse::is_to_received(){
-    return to_received;
-}
-
-void Warehouse::set_to(){
-    bt.read_all(buffer, buffer_len, &chars_read);
-    switch(buffer[0]){
-        case '\x01': add_path(0); to_received=true; 
-        break;
-        case '\x02': add_path(1); to_received=true;
-        break;
-        case '\x03': add_path(2); to_received=true;
-        break;
-        case '\x04': add_path(3); to_received=true;
-        break;
-        case '\x05': add_path(4);  to_received=true;
-        break;
-        case '\x06': add_path(5);  to_received=true;
-        break;
-    }
+    add_path(2);
     buffer[0] = '0';
 }

@@ -44,14 +44,6 @@ struct Warehouse{
     // check if it's end of the game
     bool is_end();
     
-    // returns 
-    bool is_started();
-    
-    // set from
-    void set_from();
-    bool is_to_received(); 
-    void set_to();
-    
     
 private:
     m3pi robot;
@@ -69,6 +61,4 @@ private:
     char buffer[100];
     int buffer_len;
     int chars_read;
-    bool started;
-    bool to_received;
 };

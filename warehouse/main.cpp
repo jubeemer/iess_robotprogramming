@@ -2,7 +2,7 @@
 #include "m3pi_ng.h"
 #include "PIDLineFollower.h"
 #include "RaceTracker.h"
-#include "Music.h"
+// #include "Music.h"
 #include "Warehouse.h"
 
 m3pi robot;
@@ -17,24 +17,14 @@ const int WHITE_TOLERANCE = 400;
 int main() {
     robot.cls();
     robot.sensor_auto_calibrate();
-    Music m;
+    // Music m;
     
     Warehouse w(robot, bt);
-    PIDLineFollower controller(robot, .4, 0.9, 0, 0);
+    PIDLineFollower controller(robot, 0.3, 0.65, 0, 0.003);
     RaceTracker race(robot, 2, BLACK_TOLERANCE, WHITE_TOLERANCE);
     
     timer.start();
     race.start_timer();
-    
-    // Read in starting location from bluetooth
-    while(!w.is_started()){
-        w.set_from();
-    }
-    
-    // Read in first destination from bluetooth
-    while(!w.is_to_received()){
-        w.set_to();
-    }
     
     while(1) {
         // Get path from bluetooth
@@ -50,7 +40,7 @@ int main() {
         if(!mypin){
             robot.stop();
             race.print_summary();
-            m.play_fight_song_2(robot);
+            // m.play_fight_song_2(robot);
             break;
         }
         
